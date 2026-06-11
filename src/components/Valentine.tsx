@@ -197,8 +197,8 @@ function Counter() {
 // ============ TIMELINE ============
 const TIMELINE = [
   { icon: "❤️", title: "O dia em que nos conhecemos", text: "Um olhar — e o mundo mudou de cor." },
-  { icon: "💬", title: "Nossa primeira conversa", text: "Horas pareciam minutos. E ainda parecem." },
-  { icon: "🌹", title: "Nosso primeiro encontro", text: "Lembro de cada detalhe. Você sorrindo é o detalhe favorito." },
+  { icon: "💬", title: "Nossa primeira conversa", text: "Horas pareciam minutos, e ainda parecem. (Menos quando você me bloqueava)" },
+  { icon: "🌹", title: "Nosso primeiro encontro", text: "Lembro de cada detalhe. Você sorrindo é o detalhe favorito. A gente com vergonha um do outro" },
   { icon: "✈️", title: "Nossa primeira viagem", text: "Descobri que casa não é lugar — é você." },
   { icon: "😂", title: "Os momentos mais engraçados", text: "Rir com você é meu som preferido." },
   { icon: "💍", title: "O presente", text: "Hoje, ao seu lado, é onde eu quero estar." },
