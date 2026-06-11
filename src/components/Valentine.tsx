@@ -142,7 +142,7 @@ function Hero({ heroImg }: { heroImg: string }) {
 }
 
 // ============ COUNTER ============
-const START_DATE = new Date("2025-01-19T20:00:00");
+const START_DATE = new Date("2025-01-19T00:00:00");
 function Counter() {
   const [diff, setDiff] = useState(() => Date.now() - START_DATE.getTime());
   useEffect(() => {
