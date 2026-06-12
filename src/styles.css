@@ -97,3 +97,7 @@
   0% { transform: scale(1) translate(0,0); }
   100% { transform: scale(1.15) translate(-2%, -2%); }
 }
+
+#lovable-badge {
+  display: none !important;
+}
