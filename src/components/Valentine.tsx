@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Heart, Play, Pause, Volume2, ChevronDown, Sparkles, X, ChevronLeft, ChevronRight } from "lucide-react";
+import surprise1 from "@/assets/surprise/surprise1.jpg.asset.json";
+import surprise2 from "@/assets/surprise/surprise2.jpg.asset.json";
+
 
 // ============ FLOATING HEARTS BACKGROUND ============
 function FloatingHearts() {
