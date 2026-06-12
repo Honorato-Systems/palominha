@@ -482,6 +482,22 @@ function LoveLetter() {
           <span className="inline-block w-[2px] h-5 bg-passion ml-0.5 animate-pulse" />
         </pre>
       </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="mt-10 text-center"
+      >
+        <p className="font-script text-5xl text-gradient leading-tight drop-shadow-[0_0_30px_rgba(255,100,120,0.4)]">
+          Te Amo Mil Milhões
+        </p>
+        <div className="mt-3 flex justify-center gap-1">
+          <Heart className="h-5 w-5 text-passion heart-glow" fill="currentColor" strokeWidth={0} />
+          <Heart className="h-5 w-5 text-passion heart-glow" fill="currentColor" strokeWidth={0} />
+          <Heart className="h-5 w-5 text-passion heart-glow" fill="currentColor" strokeWidth={0} />
+        </div>
+      </motion.div>
     </section>
   );
 }
