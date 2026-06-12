@@ -241,9 +241,38 @@ function Timeline() {
   );
 }
 
-// ============ GALLERY ============
+// ============ GALLERY (premium swipeable carousel) ============
 function Gallery({ photos }: { photos: string[] }) {
-  const [open, setOpen] = useState<number | null>(null);
+  const [index, setIndex] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const total = photos.length;
+
+  const go = (dir: number) => {
+    setDirection(dir);
+    setIndex((i) => (i + dir + total) % total);
+  };
+  const goTo = (i: number) => {
+    setDirection(i > index ? 1 : -1);
+    setIndex((i + total) % total);
+  };
+
+  useEffect(() => {
+    if (paused || open) return;
+    const t = setInterval(() => {
+      setDirection(1);
+      setIndex((i) => (i + 1) % total);
+    }, 4500);
+    return () => clearInterval(t);
+  }, [paused, open, total]);
+
+  const variants = {
+    enter: (d: number) => ({ opacity: 0, x: d > 0 ? 60 : -60, scale: 1.05 }),
+    center: { opacity: 1, x: 0, scale: 1 },
+    exit: (d: number) => ({ opacity: 0, x: d > 0 ? -60 : 60, scale: 1.05 }),
+  };
+
   return (
     <section className="relative py-20">
       <motion.h2
@@ -254,49 +283,101 @@ function Gallery({ photos }: { photos: string[] }) {
       >
         Nossa Galeria
       </motion.h2>
-      <p className="mt-2 text-center text-sm text-muted-foreground px-5">toque para ampliar</p>
+      <p className="mt-2 text-center text-sm text-muted-foreground px-5">
+        arraste, toque nas setas ou amplie
+      </p>
 
-      <div className="mt-10 overflow-hidden">
-        <motion.div
-          className="flex gap-4"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-        >
-          {[...photos, ...photos].map((src, i) => (
-            <button
-              key={i}
-              onClick={() => setOpen(i % photos.length)}
-              className="relative shrink-0 h-64 w-48 overflow-hidden rounded-3xl glass"
+      <div
+        className="relative mx-auto mt-10 w-full max-w-md px-5"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div className="relative h-[28rem] w-full overflow-hidden rounded-3xl glass-strong">
+          <AnimatePresence custom={direction} mode="popLayout">
+            <motion.div
+              key={index}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.7, ease: [0.32, 0.72, 0.24, 1] }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragStart={() => setPaused(true)}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -60) go(1);
+                else if (info.offset.x > 60) go(-1);
+                setTimeout(() => setPaused(false), 3000);
+              }}
+              onClick={() => setOpen(true)}
+              className="absolute inset-0 cursor-grab active:cursor-grabbing"
             >
               <img
-                src={src}
+                src={photos[index]}
                 alt=""
-                loading="lazy"
-                className="h-full w-full object-cover ken-burns"
+                draggable={false}
+                className="h-full w-full object-cover ken-burns select-none"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            </button>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Arrows */}
+          <button
+            onClick={(e) => { e.stopPropagation(); go(-1); setPaused(true); setTimeout(() => setPaused(false), 3000); }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 glass-strong rounded-full p-3 transition-transform active:scale-90 hover:scale-110"
+            aria-label="Anterior"
+          >
+            <ChevronLeft className="h-6 w-6 text-foreground" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); go(1); setPaused(true); setTimeout(() => setPaused(false), 3000); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 glass-strong rounded-full p-3 transition-transform active:scale-90 hover:scale-110"
+            aria-label="Próxima"
+          >
+            <ChevronRight className="h-6 w-6 text-foreground" />
+          </button>
+
+          {/* Counter */}
+          <div className="absolute top-3 right-3 z-10 glass rounded-full px-3 py-1 text-xs tabular-nums text-foreground/90">
+            {index + 1} / {total}
+          </div>
+        </div>
+
+        {/* Dots */}
+        <div className="mt-5 flex justify-center gap-1.5">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Foto ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all ${
+                i === index ? "w-6 bg-passion" : "w-1.5 bg-white/30"
+              }`}
+            />
           ))}
-        </motion.div>
+        </div>
       </div>
 
       <AnimatePresence>
-        {open !== null && (
+        {open && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setOpen(null)}
+            onClick={() => setOpen(false)}
             className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
           >
             <button className="absolute top-5 right-5 glass rounded-full p-2 z-10">
               <X className="h-5 w-5" />
             </button>
             <motion.img
-              key={open}
+              key={index}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              src={photos[open]}
+              src={photos[index]}
               className="max-h-full max-w-full rounded-2xl object-contain"
               alt=""
             />
