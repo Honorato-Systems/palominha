@@ -828,6 +828,8 @@ function MusicPlayer() {
 }
 
 // ============ MAIN ============
+import PasswordGate from "./PasswordGate";
+
 export default function ValentinePage({
   hero,
   photos,
@@ -837,22 +839,38 @@ export default function ValentinePage({
   photos: string[];
   closingImg: string;
 }) {
+  const [unlocked, setUnlocked] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <main className="relative">
-      <FloatingHearts />
-      <TapParticles />
-      <div className="relative z-10">
-        <Hero heroImg={hero} />
-        <Counter />
-        <Timeline />
-        <Gallery photos={photos} />
-        <LoveLetter />
-        <HeartSky />
-        <Cinematic />
-        <FinalSurprise />
-        <Closing img={closingImg} />
-      </div>
-      <MusicPlayer />
+      {mounted && !unlocked && <PasswordGate onUnlock={() => setUnlocked(true)} />}
+      <AnimatePresence>
+        {unlocked && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+          >
+            <FloatingHearts />
+            <TapParticles />
+            <div className="relative z-10">
+              <Hero heroImg={hero} />
+              <Counter />
+              <Timeline />
+              <Gallery photos={photos} />
+              <LoveLetter />
+              <HeartSky />
+              <Cinematic />
+              <FinalSurprise />
+              <Closing img={closingImg} />
+            </div>
+            <MusicPlayer />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
+
