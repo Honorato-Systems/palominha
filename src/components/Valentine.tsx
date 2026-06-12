@@ -574,20 +574,15 @@ function Cinematic() {
 
 // ============ FINAL SURPRISE (user-paced) ============
 type SurpriseStep =
-  | { type: "image"; src: string; caption?: string }
   | { type: "text"; text: string; className?: string }
   | { type: "final"; text: string };
 
-function FinalSurprise({ photos }: { photos: string[] }) {
+function FinalSurprise() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [finished, setFinished] = useState(false);
 
   const steps: SurpriseStep[] = [
-    { type: "image", src: photos[0] },
-    { type: "image", src: photos[1] },
-    { type: "image", src: photos[2] },
-    { type: "image", src: photos[3] },
     { type: "text", text: "Paloma, você é a melhor parte da minha história.", className: "text-3xl text-gradient" },
     { type: "text", text: "Obrigado por transformar meus dias comuns em momentos extraordinários.", className: "text-2xl text-blush" },
     { type: "text", text: "Cada riso seu virou minha trilha sonora favorita.", className: "text-2xl text-blush" },
@@ -669,18 +664,6 @@ function FinalSurprise({ photos }: { photos: string[] }) {
 
             <div className="relative z-10 w-full max-w-md text-center">
               <AnimatePresence mode="wait">
-                {!finished && current.type === "image" && (
-                  <motion.img
-                    key={`img-${step}`}
-                    src={current.src}
-                    initial={{ opacity: 0, scale: 1.08 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 1.1, ease: [0.32, 0.72, 0.24, 1] }}
-                    className="mx-auto h-80 w-64 rounded-3xl object-cover shadow-2xl"
-                    alt=""
-                  />
-                )}
                 {!finished && current.type === "text" && (
                   <motion.p
                     key={`txt-${step}`}
