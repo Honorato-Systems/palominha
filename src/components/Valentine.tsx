@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { Heart, Play, Pause, Volume2, ChevronDown, Sparkles, X } from "lucide-react";
+import { Heart, Play, Pause, Volume2, ChevronDown, Sparkles, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 // ============ FLOATING HEARTS BACKGROUND ============
 function FloatingHearts() {
@@ -241,9 +241,38 @@ function Timeline() {
   );
 }
 
-// ============ GALLERY ============
+// ============ GALLERY (premium swipeable carousel) ============
 function Gallery({ photos }: { photos: string[] }) {
-  const [open, setOpen] = useState<number | null>(null);
+  const [index, setIndex] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const total = photos.length;
+
+  const go = (dir: number) => {
+    setDirection(dir);
+    setIndex((i) => (i + dir + total) % total);
+  };
+  const goTo = (i: number) => {
+    setDirection(i > index ? 1 : -1);
+    setIndex((i + total) % total);
+  };
+
+  useEffect(() => {
+    if (paused || open) return;
+    const t = setInterval(() => {
+      setDirection(1);
+      setIndex((i) => (i + 1) % total);
+    }, 4500);
+    return () => clearInterval(t);
+  }, [paused, open, total]);
+
+  const variants = {
+    enter: (d: number) => ({ opacity: 0, x: d > 0 ? 60 : -60, scale: 1.05 }),
+    center: { opacity: 1, x: 0, scale: 1 },
+    exit: (d: number) => ({ opacity: 0, x: d > 0 ? -60 : 60, scale: 1.05 }),
+  };
+
   return (
     <section className="relative py-20">
       <motion.h2
@@ -254,49 +283,101 @@ function Gallery({ photos }: { photos: string[] }) {
       >
         Nossa Galeria
       </motion.h2>
-      <p className="mt-2 text-center text-sm text-muted-foreground px-5">toque para ampliar</p>
+      <p className="mt-2 text-center text-sm text-muted-foreground px-5">
+        arraste, toque nas setas ou amplie
+      </p>
 
-      <div className="mt-10 overflow-hidden">
-        <motion.div
-          className="flex gap-4"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-        >
-          {[...photos, ...photos].map((src, i) => (
-            <button
-              key={i}
-              onClick={() => setOpen(i % photos.length)}
-              className="relative shrink-0 h-64 w-48 overflow-hidden rounded-3xl glass"
+      <div
+        className="relative mx-auto mt-10 w-full max-w-md px-5"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div className="relative h-[28rem] w-full overflow-hidden rounded-3xl glass-strong">
+          <AnimatePresence custom={direction} mode="popLayout">
+            <motion.div
+              key={index}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.7, ease: [0.32, 0.72, 0.24, 1] }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragStart={() => setPaused(true)}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -60) go(1);
+                else if (info.offset.x > 60) go(-1);
+                setTimeout(() => setPaused(false), 3000);
+              }}
+              onClick={() => setOpen(true)}
+              className="absolute inset-0 cursor-grab active:cursor-grabbing"
             >
               <img
-                src={src}
+                src={photos[index]}
                 alt=""
-                loading="lazy"
-                className="h-full w-full object-cover ken-burns"
+                draggable={false}
+                className="h-full w-full object-cover ken-burns select-none"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            </button>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Arrows */}
+          <button
+            onClick={(e) => { e.stopPropagation(); go(-1); setPaused(true); setTimeout(() => setPaused(false), 3000); }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 glass-strong rounded-full p-3 transition-transform active:scale-90 hover:scale-110"
+            aria-label="Anterior"
+          >
+            <ChevronLeft className="h-6 w-6 text-foreground" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); go(1); setPaused(true); setTimeout(() => setPaused(false), 3000); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 glass-strong rounded-full p-3 transition-transform active:scale-90 hover:scale-110"
+            aria-label="Próxima"
+          >
+            <ChevronRight className="h-6 w-6 text-foreground" />
+          </button>
+
+          {/* Counter */}
+          <div className="absolute top-3 right-3 z-10 glass rounded-full px-3 py-1 text-xs tabular-nums text-foreground/90">
+            {index + 1} / {total}
+          </div>
+        </div>
+
+        {/* Dots */}
+        <div className="mt-5 flex justify-center gap-1.5">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Foto ${i + 1}`}
+              className={`h-1.5 rounded-full transition-all ${
+                i === index ? "w-6 bg-passion" : "w-1.5 bg-white/30"
+              }`}
+            />
           ))}
-        </motion.div>
+        </div>
       </div>
 
       <AnimatePresence>
-        {open !== null && (
+        {open && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setOpen(null)}
+            onClick={() => setOpen(false)}
             className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
           >
             <button className="absolute top-5 right-5 glass rounded-full p-2 z-10">
               <X className="h-5 w-5" />
             </button>
             <motion.img
-              key={open}
+              key={index}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              src={photos[open]}
+              src={photos[index]}
               className="max-h-full max-w-full rounded-2xl object-contain"
               alt=""
             />
@@ -401,6 +482,22 @@ function LoveLetter() {
           <span className="inline-block w-[2px] h-5 bg-passion ml-0.5 animate-pulse" />
         </pre>
       </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="mt-10 text-center"
+      >
+        <p className="font-script text-5xl text-gradient leading-tight drop-shadow-[0_0_30px_rgba(255,100,120,0.4)]">
+          Te Amo Mil Milhões
+        </p>
+        <div className="mt-3 flex justify-center gap-1">
+          <Heart className="h-5 w-5 text-passion heart-glow" fill="currentColor" strokeWidth={0} />
+          <Heart className="h-5 w-5 text-passion heart-glow" fill="currentColor" strokeWidth={0} />
+          <Heart className="h-5 w-5 text-passion heart-glow" fill="currentColor" strokeWidth={0} />
+        </div>
+      </motion.div>
     </section>
   );
 }
@@ -475,18 +572,46 @@ function Cinematic() {
   );
 }
 
-// ============ FINAL SURPRISE ============
+// ============ FINAL SURPRISE (user-paced) ============
+type SurpriseStep =
+  | { type: "image"; src: string; caption?: string }
+  | { type: "text"; text: string; className?: string }
+  | { type: "final"; text: string };
+
 function FinalSurprise({ photos }: { photos: string[] }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
+  const [finished, setFinished] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    setStep(0);
-    const seq = [800, 1500, 2200, 2900, 3600, 4500, 5500];
-    const timers = seq.map((d, i) => setTimeout(() => setStep(i + 1), d));
-    return () => timers.forEach(clearTimeout);
-  }, [open]);
+  const steps: SurpriseStep[] = [
+    { type: "image", src: photos[0] },
+    { type: "image", src: photos[1] },
+    { type: "image", src: photos[2] },
+    { type: "image", src: photos[3] },
+    { type: "text", text: "Paloma, você é a melhor parte da minha história.", className: "text-3xl text-gradient" },
+    { type: "text", text: "Obrigado por transformar meus dias comuns em momentos extraordinários.", className: "text-2xl text-blush" },
+    { type: "text", text: "Cada riso seu virou minha trilha sonora favorita.", className: "text-2xl text-blush" },
+    { type: "final", text: "Quer continuar escrevendo essa história comigo para sempre? ❤️" },
+  ];
+
+  const isLast = step >= steps.length - 1;
+  const current = steps[Math.min(step, steps.length - 1)];
+
+  const next = () => {
+    if (isLast) {
+      setFinished(true);
+      return;
+    }
+    setStep((s) => s + 1);
+  };
+
+  const close = () => {
+    setOpen(false);
+    setTimeout(() => {
+      setStep(0);
+      setFinished(false);
+    }, 400);
+  };
 
   return (
     <section className="relative px-5 py-20 text-center">
@@ -506,74 +631,128 @@ function FinalSurprise({ photos }: { photos: string[] }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] bg-black flex items-center justify-center p-5 overflow-hidden"
+            onClick={() => !finished && next()}
+            className="fixed inset-0 z-[80] bg-black flex items-center justify-center p-5 overflow-hidden cursor-pointer"
           >
-            {/* particle rain */}
-            {Array.from({ length: 60 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute"
-                style={{ left: `${Math.random() * 100}%`, top: -20 }}
-                animate={{ y: "120vh", rotate: 360 }}
-                transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 3, ease: "linear" }}
-              >
-                <Heart size={8 + Math.random() * 18} className="text-passion heart-glow" fill="currentColor" strokeWidth={0} />
-              </motion.div>
-            ))}
+            {/* heart rain only after the final reveal */}
+            {finished &&
+              Array.from({ length: 80 }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute pointer-events-none"
+                  style={{ left: `${Math.random() * 100}%`, top: -20 }}
+                  initial={{ y: -20 }}
+                  animate={{ y: "120vh", rotate: 360 }}
+                  transition={{
+                    duration: 4 + Math.random() * 4,
+                    repeat: Infinity,
+                    delay: Math.random() * 3,
+                    ease: "linear",
+                  }}
+                >
+                  <Heart
+                    size={8 + Math.random() * 20}
+                    className="text-passion heart-glow"
+                    fill="currentColor"
+                    strokeWidth={0}
+                  />
+                </motion.div>
+              ))}
 
-            <button onClick={() => setOpen(false)} className="absolute top-5 right-5 glass rounded-full p-2 z-10">
+            <button
+              onClick={(e) => { e.stopPropagation(); close(); }}
+              className="absolute top-5 right-5 glass rounded-full p-2 z-20"
+              aria-label="Fechar"
+            >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="relative z-10 max-w-md text-center">
+            <div className="relative z-10 w-full max-w-md text-center">
               <AnimatePresence mode="wait">
-                {step < 4 && (
+                {!finished && current.type === "image" && (
                   <motion.img
-                    key={step}
-                    src={photos[step % photos.length]}
-                    initial={{ opacity: 0, scale: 1.1 }}
+                    key={`img-${step}`}
+                    src={current.src}
+                    initial={{ opacity: 0, scale: 1.08 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.7 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 1.1, ease: [0.32, 0.72, 0.24, 1] }}
                     className="mx-auto h-80 w-64 rounded-3xl object-cover shadow-2xl"
+                    alt=""
                   />
                 )}
-                {step === 4 && (
+                {!finished && current.type === "text" && (
                   <motion.p
-                    key="m1"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="font-display text-3xl text-gradient"
+                    key={`txt-${step}`}
+                    initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 1.2, ease: [0.32, 0.72, 0.24, 1] }}
+                    className={`font-display ${current.className ?? "text-2xl text-foreground"}`}
                   >
-                    Paloma, você é a melhor parte da minha história.
+                    {current.text}
                   </motion.p>
                 )}
-                {step === 5 && (
+                {!finished && current.type === "final" && (
                   <motion.p
-                    key="m2"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    key="final-prompt"
+                    initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0 }}
+                    transition={{ duration: 1.2 }}
                     className="font-display text-2xl text-blush"
                   >
-                    Obrigado por transformar meus dias comuns em momentos extraordinários.
+                    Está pronta para o final?
                   </motion.p>
                 )}
-                {step >= 6 && (
+                {finished && (
                   <motion.div
-                    key="m3"
+                    key="reveal"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1 }}
+                    transition={{ duration: 1.2 }}
                   >
                     <Sparkles className="mx-auto h-10 w-10 text-gold mb-4" />
                     <p className="font-display text-3xl text-gradient">
-                      Quer continuar escrevendo essa história comigo para sempre? ❤️
+                      {(steps[steps.length - 1] as { type: "final"; text: string }).text}
+                    </p>
+                    <p className="mt-6 font-script text-3xl text-gold">
+                      Te amo mil milhões. ❤️
                     </p>
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Controls */}
+              {!finished && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="mt-10 flex flex-col items-center gap-3"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={next}
+                    className="glass-strong rounded-full px-6 py-3 font-display text-base text-foreground transition-transform active:scale-95"
+                  >
+                    {isLast ? "Finalizar ❤️" : "Próximo ❤️"}
+                  </button>
+                  <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
+                    toque para continuar
+                  </p>
+                  <div className="mt-2 flex gap-1.5">
+                    {steps.map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-1 rounded-full transition-all ${
+                          i <= step ? "w-5 bg-passion" : "w-2 bg-white/20"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}
