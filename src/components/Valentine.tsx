@@ -859,7 +859,7 @@ export default function ValentinePage({
         <LoveLetter />
         <HeartSky />
         <Cinematic />
-        <FinalSurprise photos={photos} />
+        <FinalSurprise />
         <Closing img={closingImg} />
       </div>
       <MusicPlayer />
