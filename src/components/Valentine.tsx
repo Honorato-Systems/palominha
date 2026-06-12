@@ -7,7 +7,10 @@ import surprise2 from "@/assets/surprise/surprise2.jpg.asset.json";
 
 // ============ FLOATING HEARTS BACKGROUND ============
 function FloatingHearts() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const hearts = Array.from({ length: 28 });
+  if (!mounted) return <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" />;
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       {hearts.map((_, i) => {
@@ -37,6 +40,7 @@ function FloatingHearts() {
     </div>
   );
 }
+
 
 // ============ TAP PARTICLES ============
 function TapParticles() {
