@@ -701,7 +701,7 @@ function FinalSurprise() {
 }
 
 // ============ CLOSING ============
-function Closing({ img }: { img: string }) {
+function Closing({ img: _img }: { img?: string }) {
   return (
     <section className="relative px-5 py-24">
       <div className="relative mx-auto max-w-md">
