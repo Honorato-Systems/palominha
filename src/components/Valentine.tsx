@@ -388,50 +388,6 @@ function Gallery({ photos }: { photos: string[] }) {
   );
 }
 
-// ============ MEMORY WALL ============
-function MemoryWall({ photos }: { photos: string[] }) {
-  const memories = [
-    { img: photos[8], text: "Nosso piquenique", date: "Tarde inesquecível" },
-    { img: photos[5], text: "O beijo na montanha", date: "Chapada" },
-    { img: photos[9], text: "Mar e nós dois", date: "Salvador" },
-    { img: photos[6], text: "Em casa, com a família", date: "Dias simples" },
-  ];
-  return (
-    <section className="relative px-5 py-20">
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="font-display text-center text-4xl text-gradient"
-      >
-        Mural de Memórias
-      </motion.h2>
-      <div className="mx-auto mt-10 grid max-w-md grid-cols-2 gap-4">
-        {memories.map((m, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: i * 0.1 }}
-            animate={{ y: [0, -6, 0] }}
-            // floating
-            style={{ animationDelay: `${i * 0.3}s` }}
-            className="glass rounded-2xl overflow-hidden"
-          >
-            <div className="aspect-[3/4] overflow-hidden">
-              <img src={m.img} alt="" loading="lazy" className="h-full w-full object-cover" />
-            </div>
-            <div className="p-3">
-              <p className="font-display text-base text-foreground">{m.text}</p>
-              <p className="text-[10px] uppercase tracking-widest text-gold/80">{m.date}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 // ============ LOVE LETTER (typewriter) ============
 const LETTER = `Minha Paloma,
@@ -855,7 +811,6 @@ export default function ValentinePage({
         <Counter />
         <Timeline />
         <Gallery photos={photos} />
-        <MemoryWall photos={photos} />
         <LoveLetter />
         <HeartSky />
         <Cinematic />
