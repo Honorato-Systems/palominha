@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Delete } from "lucide-react";
 
-const SECRET = "0606"; // ← altere aqui a senha de 4 dígitos
+const SECRET = "1901"; // ← altere aqui a senha de 4 dígitos
 
 function MiniHearts() {
   const [mounted, setMounted] = useState(false);
@@ -135,10 +135,10 @@ export default function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
           </motion.div>
 
           <h1
-            className="text-gradient text-3xl sm:text-4xl font-semibold leading-tight"
+            className="text-gradient text-3xl sm:text-4xl font-semibold leading-tight whitespace-nowrap"
             style={{ fontFamily: "var(--font-script)" }}
           >
-            ❤️ Paloma &amp; Honorato ❤️
+            ❤️ Paloma + Honorato ❤️
           </h1>
           <p
             className="mt-3 text-sm sm:text-base text-muted-foreground italic"
