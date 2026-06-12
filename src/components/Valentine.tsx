@@ -627,6 +627,18 @@ function FinalSurprise() {
 
             <div className="relative z-10 w-full max-w-md text-center">
               <AnimatePresence mode="wait">
+                {!finished && current.type === "image" && (
+                  <motion.img
+                    key={`img-${step}`}
+                    src={current.src}
+                    alt=""
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 1, ease: [0.32, 0.72, 0.24, 1] }}
+                    className="mx-auto max-h-[70vh] w-auto rounded-3xl object-contain shadow-2xl"
+                  />
+                )}
                 {!finished && current.type === "text" && (
                   <motion.p
                     key={`txt-${step}`}
@@ -639,6 +651,7 @@ function FinalSurprise() {
                     {current.text}
                   </motion.p>
                 )}
+
                 {!finished && current.type === "final" && (
                   <motion.p
                     key="final-prompt"
