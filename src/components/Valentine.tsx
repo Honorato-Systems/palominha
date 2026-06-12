@@ -701,7 +701,7 @@ function FinalSurprise() {
 }
 
 // ============ CLOSING ============
-function Closing({ img }: { img: string }) {
+function Closing({ img: _img }: { img?: string }) {
   return (
     <section className="relative px-5 py-24">
       <div className="relative mx-auto max-w-md">
@@ -717,16 +717,13 @@ function Closing({ img }: { img: string }) {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2 }}
-          className="relative glass-strong rounded-3xl overflow-hidden"
+          className="relative glass-strong rounded-3xl p-10 text-center"
         >
-          <img src={img} alt="" className="h-96 w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          <div className="absolute bottom-0 p-6 text-center">
-            <p className="font-display text-2xl text-gradient">
-              Eu te amo hoje, amanhã e em todos os dias que ainda virão. ❤️
-            </p>
-          </div>
+          <p className="font-display text-2xl text-gradient">
+            Eu te amo hoje, amanhã e em todos os dias que ainda virão. ❤️
+          </p>
         </motion.div>
+
         <p className="mt-10 text-center font-script text-2xl text-gold">com todo meu amor, sempre.</p>
       </div>
     </section>
