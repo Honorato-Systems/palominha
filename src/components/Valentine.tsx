@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Heart, Play, Pause, Volume2, ChevronDown, Sparkles, X, ChevronLeft, ChevronRight } from "lucide-react";
+import surprise1 from "@/assets/surprise/surprise1.jpg.asset.json";
+import surprise2 from "@/assets/surprise/surprise2.jpg.asset.json";
+
 
 // ============ FLOATING HEARTS BACKGROUND ============
 function FloatingHearts() {
@@ -530,6 +533,7 @@ function Cinematic() {
 
 // ============ FINAL SURPRISE (user-paced) ============
 type SurpriseStep =
+  | { type: "image"; src: string }
   | { type: "text"; text: string; className?: string }
   | { type: "final"; text: string };
 
@@ -539,11 +543,14 @@ function FinalSurprise() {
   const [finished, setFinished] = useState(false);
 
   const steps: SurpriseStep[] = [
+    { type: "image", src: surprise1.url },
+    { type: "image", src: surprise2.url },
     { type: "text", text: "Paloma, você é a melhor parte da minha história.", className: "text-3xl text-gradient" },
     { type: "text", text: "Obrigado por transformar meus dias comuns em momentos extraordinários.", className: "text-2xl text-blush" },
     { type: "text", text: "Cada riso seu virou minha trilha sonora favorita.", className: "text-2xl text-blush" },
     { type: "final", text: "Quer continuar escrevendo essa história comigo para sempre? ❤️" },
   ];
+
 
   const isLast = step >= steps.length - 1;
   const current = steps[Math.min(step, steps.length - 1)];
@@ -620,6 +627,18 @@ function FinalSurprise() {
 
             <div className="relative z-10 w-full max-w-md text-center">
               <AnimatePresence mode="wait">
+                {!finished && current.type === "image" && (
+                  <motion.img
+                    key={`img-${step}`}
+                    src={current.src}
+                    alt=""
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 1, ease: [0.32, 0.72, 0.24, 1] }}
+                    className="mx-auto max-h-[70vh] w-auto rounded-3xl object-contain shadow-2xl"
+                  />
+                )}
                 {!finished && current.type === "text" && (
                   <motion.p
                     key={`txt-${step}`}
@@ -632,6 +651,7 @@ function FinalSurprise() {
                     {current.text}
                   </motion.p>
                 )}
+
                 {!finished && current.type === "final" && (
                   <motion.p
                     key="final-prompt"
