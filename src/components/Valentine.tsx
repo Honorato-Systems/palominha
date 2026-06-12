@@ -533,6 +533,7 @@ function Cinematic() {
 
 // ============ FINAL SURPRISE (user-paced) ============
 type SurpriseStep =
+  | { type: "image"; src: string }
   | { type: "text"; text: string; className?: string }
   | { type: "final"; text: string };
 
@@ -542,11 +543,14 @@ function FinalSurprise() {
   const [finished, setFinished] = useState(false);
 
   const steps: SurpriseStep[] = [
+    { type: "image", src: surprise1.url },
+    { type: "image", src: surprise2.url },
     { type: "text", text: "Paloma, você é a melhor parte da minha história.", className: "text-3xl text-gradient" },
     { type: "text", text: "Obrigado por transformar meus dias comuns em momentos extraordinários.", className: "text-2xl text-blush" },
     { type: "text", text: "Cada riso seu virou minha trilha sonora favorita.", className: "text-2xl text-blush" },
     { type: "final", text: "Quer continuar escrevendo essa história comigo para sempre? ❤️" },
   ];
+
 
   const isLast = step >= steps.length - 1;
   const current = steps[Math.min(step, steps.length - 1)];
