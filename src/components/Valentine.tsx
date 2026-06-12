@@ -395,11 +395,25 @@ function Gallery({ photos }: { photos: string[] }) {
 // ============ LOVE LETTER (typewriter) ============
 const LETTER = `Minha Paloma,
 
-Se eu pudesse guardar um instante para sempre, seria o som da sua risada. Se eu pudesse pintar um lugar, pintaria o seu colo. Você é onde minha pressa descansa.
+Bom... já fiz algumas cartas à mão para você, então dessa vez resolvi fazer algo diferente kkk.
 
-Obrigado por cada café, cada abraço apertado, cada "boa noite, meu amor". Obrigado por existir do meu lado.
+Às vezes eu paro para pensar na sorte que tenho. Entre tantas possibilidades da vida, encontrei você. A mulher mais incrível que eu poderia ter ao meu lado. Claro que as chatices fazem parte do pacote, mas até elas acabam virando lembranças que me fazem sorrir.
 
-Te amo. Hoje, amanhã, sempre.`;
+Minha ruiva, eu amo cada detalhe seu. Seu jeito, suas manias, suas brincadeiras e até os momentos em que você me tira do sério. Tudo isso faz parte da pessoa maravilhosa que você é.
+
+Se eu pudesse guardar um instante para sempre, seria o som da sua risada descontrolada. Porque naquele momento parece que o mundo fica mais leve e tudo faz sentido.
+
+Obrigado por cada almoço compartilhado, cada beijo, cada abraço apertado, cada conversa, cada "boa noite, meu amor" e por todos os pequenos momentos que transformam dias comuns em lembranças especiais.
+
+Obrigado por caminhar ao meu lado, por me apoiar, por acreditar em nós e por fazer minha vida mais feliz simplesmente por existir nela.
+
+Hoje, olhando para nossa história, tenho ainda mais certeza de que os melhores momentos da minha vida aconteceram porque você estava comigo.
+
+Eu te amo. Hoje, amanhã, daqui a muitos anos e em todos os dias que ainda virão.
+
+Com amor,
+
+Seu namorado ❤️`;
 
 function LoveLetter() {
   const [text, setText] = useState("");
