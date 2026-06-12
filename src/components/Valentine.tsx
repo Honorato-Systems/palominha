@@ -7,7 +7,10 @@ import surprise2 from "@/assets/surprise/surprise2.jpg.asset.json";
 
 // ============ FLOATING HEARTS BACKGROUND ============
 function FloatingHearts() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const hearts = Array.from({ length: 28 });
+  if (!mounted) return <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" />;
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       {hearts.map((_, i) => {
@@ -37,6 +40,7 @@ function FloatingHearts() {
     </div>
   );
 }
+
 
 // ============ TAP PARTICLES ============
 function TapParticles() {
@@ -824,6 +828,8 @@ function MusicPlayer() {
 }
 
 // ============ MAIN ============
+import PasswordGate from "./PasswordGate";
+
 export default function ValentinePage({
   hero,
   photos,
@@ -833,22 +839,38 @@ export default function ValentinePage({
   photos: string[];
   closingImg: string;
 }) {
+  const [unlocked, setUnlocked] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <main className="relative">
-      <FloatingHearts />
-      <TapParticles />
-      <div className="relative z-10">
-        <Hero heroImg={hero} />
-        <Counter />
-        <Timeline />
-        <Gallery photos={photos} />
-        <LoveLetter />
-        <HeartSky />
-        <Cinematic />
-        <FinalSurprise />
-        <Closing img={closingImg} />
-      </div>
-      <MusicPlayer />
+      {mounted && !unlocked && <PasswordGate onUnlock={() => setUnlocked(true)} />}
+      <AnimatePresence>
+        {unlocked && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+          >
+            <FloatingHearts />
+            <TapParticles />
+            <div className="relative z-10">
+              <Hero heroImg={hero} />
+              <Counter />
+              <Timeline />
+              <Gallery photos={photos} />
+              <LoveLetter />
+              <HeartSky />
+              <Cinematic />
+              <FinalSurprise />
+              <Closing img={closingImg} />
+            </div>
+            <MusicPlayer />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
+
